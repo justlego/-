@@ -9,11 +9,14 @@
 #import "ViewController.h"
 
 @interface ViewController ()<UITableViewDelegate,UITableViewDataSource>
-
+{
+    BOOL isHidden;
+    CGRect menuFrame;
+}
 @property (nonatomic, strong) UIButton *button;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, assign) BOOL isHidden;
 @property (nonatomic, strong) NSArray *array;
+@property (nonatomic, strong) UIView *backView;
 
 @end
 
@@ -25,11 +28,24 @@
 
     [self button];
     [self array];
+    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark -- 使用UIMenuItem
+- (void)menu
+{
+    UIMenuItem *message = [[UIMenuItem alloc] initWithTitle:@"消息" action:@selector(messageClicked)];
+    UIMenuItem *share = [[UIMenuItem alloc] initWithTitle:@"分享" action:@selector(shareClicked)];
+    
+    UIMenuController *menu = [UIMenuController sharedMenuController];
+    [menu setMenuItems:[NSArray arrayWithObjects:message,share,nil]];
+    [menu setTargetRect:self.view.bounds inView:self.view];
+    [menu setMenuVisible:YES animated:YES];
 }
 
 #pragma mark -- setter
@@ -41,6 +57,8 @@
         _button.frame = CGRectMake(100, 100, 40, 40);
         [_button setTitle:@"➕" forState:UIControlStateNormal];
         [_button addTarget:self action:@selector(didButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+//        [_button addTarget:self action:@selector(menu) forControlEvents:UIControlEventTouchUpInside];
+
         [self.view addSubview:_button];
     }
     return _button;
@@ -52,7 +70,6 @@
     _tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [UIColor grayColor];
     [self.view addSubview:_tableView];
     return _tableView;
 }
@@ -67,12 +84,17 @@
     return _array;
 }
 
+- (UIView *)backView
+{
+    return _backView;
+}
+
 #pragma mark -- action
 - (void)didButtonClicked
 {
-    _isHidden = !_isHidden;
+    isHidden = !isHidden;
     
-    if (!_isHidden)
+    if (!isHidden)
     {
         [self tableView];
     }
@@ -80,6 +102,34 @@
     {
         [_tableView removeFromSuperview];
     }
+}
+
+- (void)messageClicked
+{
+    
+}
+
+- (void)shareClicked
+{
+    
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if (action == @selector(messageClicked))
+    {
+        return YES;
+    }
+    else if (action == @selector(shareClicked))
+    {
+        return YES;
+    }
+    return [super canPerformAction:action withSender:sender];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
 }
 
 #pragma mark -- UITableViewDataSource
